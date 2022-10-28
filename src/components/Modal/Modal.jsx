@@ -1,38 +1,41 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Loader } from '../Loader/Loader';
 import css from './Modal.module.scss';
 
-export class Modal extends React.Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.closeByEsc);
-    window.addEventListener('click', this.closeByBackdrop);
-  }
+export const Modal = ({ url, alt, onCloseModal }) => {
+  const [showLoader, setShowLoader] = useState(true);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.closeByEsc);
-    window.removeEventListener('click', this.closeByBackdrop);
-  }
+  useEffect(() => {
+    const closeByEsc = ({ code }) => {
+      if (code === 'Escape') {
+        onCloseModal();
+      }
+    };
+    window.addEventListener('keydown', closeByEsc);
+    return () => {
+      window.removeEventListener('keydown', closeByEsc);
+    };
+  }, [onCloseModal]);
 
-  closeByEsc = e => {
-    if (e.code === 'Escape') {
-      this.props.onCloseModal();
-    }
-  };
-
-  closeByBackdrop = e => {
+  const closeByBackdrop = e => {
     if (e.currentTarget === e.target) {
-      this.props.onCloseModal();
+      onCloseModal();
     }
   };
 
-  render() {
-    const { url, alt } = this.props;
-
-    return (
-      <div className={css.overlay} onClick={this.closeByBackdrop}>
-        <div className={css.modal}>
-          <img src={url} alt={alt} />
-        </div>
+  return (
+    <div className={css.overlay} onClick={closeByBackdrop}>
+      <div className={css.modal}>
+        <img src={url} alt={alt} onLoad={() => setShowLoader(false)} />
+        {showLoader && <Loader />}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+Modal.propTypes = {
+  url: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  onCloseModal: PropTypes.func.isRequired,
+};

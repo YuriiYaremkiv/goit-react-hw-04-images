@@ -36,49 +36,53 @@ export const App = () => {
 
     setStatus(Status.PENDING);
     fetch();
+  }, [searchName, page]);
 
-    async function fetch() {
-      try {
-        const response = await newsApiService.getResponse(
-          searchName,
-          page,
-          perPage
+  async function fetch() {
+    try {
+      const response = await newsApiService.getResponse(
+        searchName,
+        page,
+        perPage
+      );
+
+      const { total, hits } = response.data;
+
+      if (total === 0) {
+        setStatus(Status.IDLE);
+        Notify.info(
+          `Nothing was found for "${searchName}". Please try again by changing the search entry`
         );
-
-        const { total, hits } = response.data;
-
-        if (total === 0) {
-          setStatus(Status.IDLE);
-          Notify.info(
-            `Nothing was found for "${searchName}". Please try again by changing the search entry`
-          );
-          return;
-        }
-
-        if (!imageGallery.length) {
-          console.log('пустой массив');
-          setImageGallery(hits);
-          setStatus(Status.RESOLVED);
-          setTotalImages(total);
-          return;
-        }
-
-        if (imageGallery.length) {
-          console.log('пустой массив  rgrgerg');
-          setImageGallery(prevState => [...prevState, ...hits]);
-          setStatus(Status.RESOLVED);
-          setTotalImages(total);
-          return;
-        }
-      } catch (error) {
-        setError(Status.REJECTED);
         return;
       }
+
+      if (!imageGallery.length) {
+        console.log('пустой массив');
+        setImageGallery(hits);
+        setStatus(Status.RESOLVED);
+        setTotalImages(total);
+        return;
+      }
+
+      if (imageGallery.length) {
+        console.log('пустой массив  rgrgerg');
+        setImageGallery(prevState => [...prevState, ...hits]);
+        setStatus(Status.RESOLVED);
+        setTotalImages(total);
+        return;
+      }
+    } catch (error) {
+      setError(Status.REJECTED);
+      return;
     }
-  }, [searchName, page, imageGallery.length]);
+  }
 
   const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
+  };
+
+  const changePage = () => {
+    setPage(1);
   };
 
   const onSubmitForm = searchName => {
@@ -100,7 +104,11 @@ export const App = () => {
 
   return (
     <>
-      <Searchbar onSubmit={onSubmitForm} prevSearchName={searchName} />
+      <Searchbar
+        onSubmit={onSubmitForm}
+        prevSearchName={searchName}
+        changePage={changePage}
+      />
       <ImageGallery>
         {imageGallery && (
           <ImageGalleryItem imageGallery={imageGallery} onClick={openModal} />
