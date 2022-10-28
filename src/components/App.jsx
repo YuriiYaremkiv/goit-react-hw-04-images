@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import NewsApiService from './services/image-api';
@@ -22,36 +22,22 @@ export const App = () => {
   const [searchName, setSearchName] = useState('');
   const [imageGallery, setImageGallery] = useState([]);
   const [page, setPage] = useState(1);
-  const [perPage] = useState(12);
+  const perPage = 12;
   const [totalImages, setTotalImages] = useState(0);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(Status.IDLE);
   const [imageModal, setImageModal] = useState('');
   const [imageModalAlt, setImageModalAlt] = useState('');
 
-
-
   useEffect(() => {
+    if (!searchName) {
+      return;
+    }
 
-  }, []);
+    setStatus(Status.PENDING);
+    fetch();
 
-
-
-
-
-
-
-
-
-
-
-
-  const componentDidUpdate = async (prevProps, prevState) => {
-    const { searchName, imageGallery, page, perPage } = this.state;
-
-    if (prevState.searchName !== searchName || prevState.page !== page) {
-      this.setState({ status: Status.PENDING });
-
+    async function fetch() {
       try {
         const response = await newsApiService.getResponse(
           searchName,
@@ -70,6 +56,7 @@ export const App = () => {
         }
 
         if (!imageGallery.length) {
+          console.log('пустой массив');
           setImageGallery(hits);
           setStatus(Status.RESOLVED);
           setTotalImages(total);
@@ -77,7 +64,8 @@ export const App = () => {
         }
 
         if (imageGallery.length) {
-          setImageGallery([...prevState.imageGallery, ...hits]);
+          console.log('пустой массив  rgrgerg');
+          setImageGallery(prevState => [...prevState, ...hits]);
           setStatus(Status.RESOLVED);
           setTotalImages(total);
           return;
@@ -87,7 +75,7 @@ export const App = () => {
         return;
       }
     }
-  }
+  }, [searchName, page]);
 
   const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
@@ -107,34 +95,27 @@ export const App = () => {
     setImageModal(null);
   };
 
-    const visibleLoadMoreButton =
-      totalImages > page * perPage && status === 'resolved';
+  const visibleLoadMoreButton =
+    totalImages > page * perPage && status === 'resolved';
 
-    return (
-      <>
-        <Searchbar onSubmit={onSubmitForm} prevSearchName={searchName} />
-        <ImageGallery>
-          {imageGallery && (
-            <ImageGalleryItem
-              imageGallery={imageGallery}
-              onClick={openModal}
-            />
-          )}
-        </ImageGallery>
-
-        {status === 'pending' && <Loader />}
-
-        {visibleLoadMoreButton && <LoadMoreBtn onClick={handleLoadMore} />}
-
-        {imageModal && (
-          <Modal
-            url={imageModal}
-            alt={imageModalAlt}
-            onCloseModal={closeModal}
-          />
+  return (
+    <>
+      <Searchbar onSubmit={onSubmitForm} prevSearchName={searchName} />
+      <ImageGallery>
+        {imageGallery && (
+          <ImageGalleryItem imageGallery={imageGallery} onClick={openModal} />
         )}
+      </ImageGallery>
 
-        {status === 'rejected' && <ErrorMessage onError={error} />}
-      </>
-    );
-  }
+      {status === 'pending' && <Loader />}
+
+      {visibleLoadMoreButton && <LoadMoreBtn onClick={handleLoadMore} />}
+
+      {imageModal && (
+        <Modal url={imageModal} alt={imageModalAlt} onCloseModal={closeModal} />
+      )}
+
+      {status === 'rejected' && <ErrorMessage onError={error} />}
+    </>
+  );
+};
