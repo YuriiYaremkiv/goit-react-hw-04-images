@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  justify-content: center;
+
+  padding-top: 20px;
+}
+
+.container__message {
+  font-size: 32px;
+  color: red;
+}
