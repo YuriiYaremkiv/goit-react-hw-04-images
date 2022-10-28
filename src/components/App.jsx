@@ -75,7 +75,7 @@ export const App = () => {
         return;
       }
     }
-  }, [searchName, page]);
+  }, [searchName, page, imageGallery.length]);
 
   const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
