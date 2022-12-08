@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import css from './ErrorMessage.module.scss';
 
 export const ErrorMessage = ({ onError }) => {
@@ -9,4 +10,8 @@ export const ErrorMessage = ({ onError }) => {
       </p>
     </div>
   );
+};
+
+ErrorMessage.propTypes = {
+  onError: PropTypes.string.isRequired,
 };

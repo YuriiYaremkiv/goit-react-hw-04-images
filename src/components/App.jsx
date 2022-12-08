@@ -19,10 +19,10 @@ const Status = {
 };
 
 export const App = () => {
+  const perPage = 12;
   const [searchName, setSearchName] = useState('');
   const [imageGallery, setImageGallery] = useState([]);
   const [page, setPage] = useState(1);
-  const perPage = 12;
   const [totalImages, setTotalImages] = useState(0);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(Status.IDLE);
@@ -36,6 +36,7 @@ export const App = () => {
 
     setStatus(Status.PENDING);
     fetch();
+    // eslint-disable-next-line
   }, [searchName, page]);
 
   async function fetch() {
@@ -57,7 +58,6 @@ export const App = () => {
       }
 
       if (!imageGallery.length) {
-        console.log('пустой массив');
         setImageGallery(hits);
         setStatus(Status.RESOLVED);
         setTotalImages(total);
@@ -65,7 +65,6 @@ export const App = () => {
       }
 
       if (imageGallery.length) {
-        console.log('пустой массив  rgrgerg');
         setImageGallery(prevState => [...prevState, ...hits]);
         setStatus(Status.RESOLVED);
         setTotalImages(total);

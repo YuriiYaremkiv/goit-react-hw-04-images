@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { IconContext } from 'react-icons';
+import PropTypes from 'prop-types';
 import { AiOutlineSearch } from 'react-icons/ai';
+
 import css from './Searchbar.module.scss';
 
 export const Searchbar = ({ prevSearchName, onSubmit, changePage }) => {
@@ -50,4 +52,10 @@ export const Searchbar = ({ prevSearchName, onSubmit, changePage }) => {
       </form>
     </header>
   );
+};
+
+Searchbar.propTypes = {
+  prevSearchName: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  changePage: PropTypes.func.isRequired,
 };
